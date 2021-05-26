@@ -15,8 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AddCircle
-import androidx.compose.material.icons.outlined.Payment
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,19 +49,106 @@ class Home : ComponentActivity() {
 
 @Composable
 fun HomePage() {
+
     Scaffold(
-        backgroundColor = Color.Gray.copy(alpha = .08f)
+        backgroundColor = Color.Gray.copy(alpha = .08f),
+        topBar = { AppToolBar() },
+        bottomBar = { AppBottomBar() }
+
     ) {
-        Column {
+        Column(modifier = Modifier.padding(it)) {
             CardPager(createBankCards())
             ButtonRow()
             CreateHeadlineText("Recent Transaction")
             BuildTransactionList(createTransactionList())
         }
+
     }
 
 }
 
+@Composable
+fun AppBottomBar() {
+    BottomAppBar(
+        backgroundColor = Color.White,
+        elevation = 0.dp,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            BottomNavigationItem(
+                selected = false,
+                onClick = { },
+                alwaysShowLabel = false,
+                icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
+                label = { Text(text = "Home", style = MaterialTheme.typography.overline) }
+            )
+            BottomNavigationItem(
+                selected = false,
+                alwaysShowLabel = false,
+                onClick = { },
+                icon = { Icon(Icons.Outlined.AccountBalanceWallet, contentDescription = null) },
+                label = { Text(text = "Wallet", style = MaterialTheme.typography.overline) }
+            )
+            BottomNavigationItem(
+                selected = false,
+                onClick = { },
+                alwaysShowLabel = false,
+                icon = { Icon(Icons.Outlined.Payments, contentDescription = null) },
+                label = { Text(text = "Transaction", style = MaterialTheme.typography.overline) }
+            )
+            BottomNavigationItem(
+                selected = false,
+                onClick = { },
+                alwaysShowLabel = false,
+                icon = { Icon(Icons.Outlined.PersonOutline, contentDescription = null) },
+                label = { Text(text = "Profile", style = MaterialTheme.typography.overline) }
+            )
+
+
+        }
+    }
+}
+
+/**
+ * Create App Title bar
+ */
+@Composable
+fun AppToolBar() {
+    TopAppBar(
+        title = {
+            Text(
+                "Account Detail",
+                style = MaterialTheme.typography.subtitle1
+            )
+        },
+        backgroundColor = Color.White,
+        navigationIcon = {
+            Icon(
+                Icons.Outlined.AccountBalance,
+                contentDescription = null,
+                modifier = Modifier.padding(start = 10.dp),
+            )
+        },
+        actions = {
+            IconButton(
+                modifier = Modifier.padding(end = 10.dp),
+                onClick = {},
+            ) {
+                Icon(
+                    Icons.Outlined.Notifications,
+                    contentDescription = null,
+                )
+            }
+        },
+        elevation = 0.dp
+    )
+}
+
+/**
+ * Create horizontal Bank pager data
+ */
 fun createBankCards(): List<BankCard> {
     return listOf(
         BankCard(
@@ -85,9 +172,12 @@ fun createBankCards(): List<BankCard> {
             cardName = "Elon Musk",
             expDate = "05/27"
         ),
-    );
+    )
 }
 
+/**
+ * Create Transaction entries
+ */
 fun createTransactionList(): List<Transaction> {
     return listOf(
         Transaction(
@@ -129,6 +219,9 @@ fun createTransactionList(): List<Transaction> {
     )
 }
 
+/**
+ * Create horizontal card pager.
+ */
 @Composable
 fun CardPager(cards: List<BankCard>) {
     LazyRow(
@@ -143,6 +236,9 @@ fun CardPager(cards: List<BankCard>) {
     }
 }
 
+/**
+ * Create Bank card UI
+ */
 @Composable
 fun BankCard(cardData: BankCard) {
     Card(
@@ -167,6 +263,10 @@ fun BankCard(cardData: BankCard) {
     }
 }
 
+/**
+ * Create Card holder row.
+ * Holder Name, Exp Date.
+ */
 @Composable
 fun CardHolderData(cardData: BankCard) {
     Row(
@@ -230,6 +330,9 @@ fun CardExpiry(expDate: String) {
     }
 }
 
+/**
+ * Card Number
+ */
 @Composable
 fun CardNumber(cardNumber: String) {
     Row(
@@ -247,6 +350,9 @@ fun CardNumber(cardNumber: String) {
     }
 }
 
+/**
+ * Account Balance Row
+ */
 @Composable
 fun BalanceRow(type: String, amount: Double) {
     Row(
@@ -267,10 +373,13 @@ fun BalanceRow(type: String, amount: Double) {
     }
 }
 
+/**
+ * Build Transaction List
+ */
 @Composable
 fun BuildTransactionList(transactions: List<Transaction>) {
     LazyColumn(
-        modifier = Modifier.padding(15.dp)
+        modifier = Modifier.padding(top = 15.dp, start = 15.dp, end = 15.dp)
     ) {
         items(transactions) { transaction ->
             TransactionRow(transaction)
@@ -278,15 +387,18 @@ fun BuildTransactionList(transactions: List<Transaction>) {
     }
 }
 
+/**
+ * Build Tranasction row
+ */
 @Composable
 fun TransactionRow(transaction: Transaction) {
     Card(
         elevation = 1.dp,
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier
-            .height(100.dp)
+            .height(80.dp)
             .fillMaxWidth()
-            .padding(start=10.dp,top=5.dp,end=10.dp,bottom=2.dp),
+            .padding(start = 10.dp, top = 5.dp, end = 10.dp, bottom = 2.dp),
 
         ) {
         Row(
@@ -303,11 +415,11 @@ fun TransactionRow(transaction: Transaction) {
                 ) {
                     Text(
                         text = transaction.transactionTitle,
-                        style = MaterialTheme.typography.subtitle1
+                        style = MaterialTheme.typography.caption
                     )
                     Text(
                         text = transaction.transactionSubtitle,
-                        style = MaterialTheme.typography.body2.copy(color = Color.Gray)
+                        style = MaterialTheme.typography.overline.copy(color = Color.Gray)
                     )
                 } //Build Amount & Time
                 Column(
@@ -315,13 +427,13 @@ fun TransactionRow(transaction: Transaction) {
                 ) {
                     Text(
                         text = "- $ " + transaction.amount.toString(),
-                        style = MaterialTheme.typography.body2.copy(
+                        style = MaterialTheme.typography.caption.copy(
                             color = Color.Red.copy(alpha = 0.5f)
                         )
                     )
                     Text(
                         text = transaction.time,
-                        style = MaterialTheme.typography.caption.copy(color = Color.Gray)
+                        style = MaterialTheme.typography.overline.copy(color = Color.Gray)
                     )
                 }
             }
@@ -339,8 +451,8 @@ fun TransactionIcon(type: String) {
     ) {
         Box(
             modifier = Modifier
-                .width(60.dp)
-                .height(60.dp)
+                .width(40.dp)
+                .height(40.dp)
                 .background(Color.Gray.copy(alpha = 0.1f)),
             contentAlignment = Alignment.Center
         ) {
@@ -349,6 +461,9 @@ fun TransactionIcon(type: String) {
     }
 }
 
+/**
+ * Create Add Card & Top up Button
+ */
 @Composable
 fun ButtonRow() {
 
@@ -376,6 +491,12 @@ var onTopUp: () -> Unit = {
     Log.d("Compose ", " onTopUp")
 }
 
+/**
+ * Create individual button
+ * @param icon : Button icon
+ * @param text : Button Text
+ * @param onButtonClick : Button Click listener function
+ */
 @Composable
 fun CreateButton(icon: ImageVector, text: String, onButtonClick: () -> Unit) {
     Button(
@@ -396,7 +517,11 @@ fun CreateButton(icon: ImageVector, text: String, onButtonClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(painter = rememberVectorPainter(image = icon), contentDescription = null)
-            Text(text, modifier = Modifier.padding(horizontal = 5.dp))
+            Text(
+                text,
+                style = MaterialTheme.typography.body2,
+                modifier = Modifier.padding(horizontal = 5.dp)
+            )
         }
     }
 }
@@ -405,7 +530,7 @@ fun CreateButton(icon: ImageVector, text: String, onButtonClick: () -> Unit) {
 fun CreateHeadlineText(text: String) {
     Text(
         text = text,
-        style = MaterialTheme.typography.h6,
+        style = MaterialTheme.typography.subtitle1,
         modifier = Modifier.padding(horizontal = 20.dp)
     )
 }
