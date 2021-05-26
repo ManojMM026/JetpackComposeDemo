@@ -1,8 +1,8 @@
 package com.example.jetpackcomposedemo
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,9 +29,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.jetpackcomposedemo.model.BankCard
 import com.example.jetpackcomposedemo.model.Transaction
 import com.example.jetpackcomposedemo.ui.theme.JetpackComposeDemoTheme
+import com.example.jetpackcomposedemo.util.CardDataProviderUtil.BankUtil.createBankCards
+import com.example.jetpackcomposedemo.util.TransactionDataProviderUtil.TransactionUtil.createTransactionList
+import com.example.jetpackcomposedemo.util.getHeightDp
+import com.example.jetpackcomposedemo.util.getWidthDp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -75,10 +79,27 @@ class Home : ComponentActivity() {
 
     }
 
+    private fun getToolBarBackgroundColor(context: Context): Color {
+        return when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_NO -> {
+                Color.White
+            } // Night mode is not active, we're using the light theme
+            Configuration.UI_MODE_NIGHT_YES -> {
+                Color(ContextCompat.getColor(context, R.color.dark_mode_color))
+            }
+            else -> Color(
+                ContextCompat.getColor(
+                    context,
+                    R.color.dark_mode_color
+                )
+            )// Night mode is active, we're using dark theme
+        }
+    }
+
     @Composable
     fun AppBottomBar() {
         BottomAppBar(
-            backgroundColor = Color.White,
+            backgroundColor = getToolBarBackgroundColor(LocalContext.current),
             elevation = 0.dp,
         ) {
             Row(
@@ -136,7 +157,7 @@ class Home : ComponentActivity() {
                     style = MaterialTheme.typography.subtitle1
                 )
             },
-            backgroundColor = Color.White,
+            backgroundColor = getToolBarBackgroundColor(LocalContext.current),
             navigationIcon = {
                 Icon(
                     Icons.Outlined.AccountBalance,
@@ -156,79 +177,6 @@ class Home : ComponentActivity() {
                 }
             },
             elevation = 0.dp
-        )
-    }
-
-    /**
-     * Create horizontal Bank pager data
-     */
-    fun createBankCards(): List<BankCard> {
-        return listOf(
-            BankCard(
-                type = "Master",
-                cardNumber = "**** **** **** **** 9090",
-                cardBalance = 4680.0,
-                cardName = "Tim cook",
-                expDate = "07/24"
-            ),
-            BankCard(
-                type = "Visa",
-                cardNumber = "**** **** **** **** 1023",
-                cardBalance = 86800.0,
-                cardName = "Steve Jobs",
-                expDate = "04/26"
-            ),
-            BankCard(
-                type = "Master",
-                cardNumber = "**** **** **** **** 1080",
-                cardBalance = 50080.0,
-                cardName = "Elon Musk",
-                expDate = "05/27"
-            ),
-        )
-    }
-
-    /**
-     * Create Transaction entries
-     */
-    fun createTransactionList(): List<Transaction> {
-        return listOf(
-            Transaction(
-                transactionTitle = "Food Panda",
-                transactionSubtitle = "2 Burgers",
-                amount = 15.99,
-                time = "12:45 PM"
-            ),
-            Transaction(
-                transactionTitle = "Apple pay",
-                transactionSubtitle = "Subscription",
-                amount = 99.00,
-                time = "05:45 PM"
-            ),
-            Transaction(
-                transactionTitle = "Netflix",
-                transactionSubtitle = "Subscription",
-                amount = 49.99,
-                time = "04:45 PM"
-            ),
-            Transaction(
-                transactionTitle = "Paypal",
-                transactionSubtitle = "Send Money",
-                amount = 80.99,
-                time = "03:45 PM"
-            ),
-            Transaction(
-                transactionTitle = "Amazon",
-                transactionSubtitle = "Product Purchase",
-                amount = 800.00,
-                time = "03:49 PM"
-            ),
-            Transaction(
-                transactionTitle = "Udemy",
-                transactionSubtitle = "Bought Course",
-                amount = 50.00,
-                time = "06:49 PM"
-            ),
         )
     }
 
@@ -411,7 +359,7 @@ class Home : ComponentActivity() {
             modifier = Modifier
                 .height(80.dp)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp),)
+                .clip(RoundedCornerShape(10.dp))
                 .clickable(onClick = {
                     showMessage("Spent $${transaction.amount} on ${transaction.transactionTitle} ")
                 })
@@ -503,7 +451,7 @@ class Home : ComponentActivity() {
 
     private fun showMessage(message: String) {
         snackBarCoroutineScope.launch {
-            scaffoldState.snackbarHostState.showSnackbar(message,actionLabel = "Dismiss")
+            scaffoldState.snackbarHostState.showSnackbar(message, actionLabel = "Dismiss")
         }
     }
 
@@ -560,23 +508,6 @@ class Home : ComponentActivity() {
         )
     }
 
-    /**
-     * @param context
-     * @return the screen width in dp
-     */
-    private fun getWidthDp(context: Context): Float {
-        val displayMetrics: DisplayMetrics = context.resources.displayMetrics
-        return displayMetrics.widthPixels / displayMetrics.density
-    }
-
-    /**
-     * @param context
-     * @return the screen height in dp
-     */
-    private fun getHeightDp(context: Context): Float {
-        val displayMetrics: DisplayMetrics = context.resources.displayMetrics
-        return displayMetrics.heightPixels / displayMetrics.density
-    }
 
     @Preview(showBackground = true)
     @Composable
